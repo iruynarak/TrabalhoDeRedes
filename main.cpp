@@ -1,8 +1,11 @@
-
+#include <stdio.h>          /* printf */
+#include <stdlib.h>         /* exit */
 #include <string.h>         /* bzero */
-#include <arpa/inet.h>      /* struct sockaddr */
 #include <sys/socket.h>     /* recv, send */
+#include <arpa/inet.h>      /* struct sockaddr */
 #include <unistd.h>         /* exit */
+
+
 
 
 #define BUFFSIZE 500
@@ -13,14 +16,16 @@
 #endif
 
 
+#define SA struct sockaddr
 
 int main(void)
 {
 	//ErrorCode error;
 
-	struct sockaddr_in servaddr, client, connfd, n;
-	int listenfd, clientlen;
+	int listenfd, connfd, n;
+	unsigned int clientlen;
 	char buffer[BUFFSIZE];
+	struct sockaddr_in servaddr, client;
 
 
 	if((listenfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
@@ -29,13 +34,12 @@ int main(void)
 		return 0;
 	}
 
-
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family      	= AF_INET;
 	servaddr.sin_addr.s_addr 	= htonl(INADDR_ANY);
-	servaddr.sin_port        	= 80;
+	servaddr.sin_port        	= htons(8081);
 
-	if(bind(listenfd, (sockaddr *) &servaddr, sizeof(servaddr)) < 0)
+	if(bind(listenfd, (SA *) &servaddr, sizeof(servaddr)) < 0)
 	{
 		Error::printError(bindSocket);
 		return 0;
@@ -47,23 +51,27 @@ int main(void)
 		return 0;
 	}
 
-	clientlen = sizeof(client);
-
-	if((connfd = accept(listenfd, (sockaddr *) &client, &clientlen)) < 0)
+	while(true)
 	{
-		Error::printError(acceptConnection);
-		return 0;
+		n = -1;
+		clientlen = sizeof(client);
+
+		if((connfd = accept(listenfd, (SA *) &client, &clientlen)) < 0)
+		{
+			Error::printError(acceptConnection);
+			return 0;
+		}
+
+		if((n = recv(connfd, buffer, BUFFSIZE, 0)) < 0)
+		{
+			Error::printError(receiveData);
+			return 0;
+		}
+
+		printf("%s", buffer);
+
+		close(connfd);
 	}
-
-	if((n = recv(connfd, buffer, BUFFSIZE, 0)) < 0)
-	{
-		Error::printError(receiveData);
-		return 0;
-	}
-
-	printf("%s", buffer);
-
-
 	/*
 	Para envio:
 	if(send(connfd, buffer, BUFFSIZE, 0) != BUFFSIZE)
