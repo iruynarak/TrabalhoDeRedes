@@ -97,9 +97,10 @@ int main(int argc, char** argv)
 
 
 		 int len = strlen(responseText);
-		 send(connfd, responseText, len, 0);
+		 if(send(connfd, responseText, len, 0) == -1)
 		 {
 			 Error::printError(sendData);
+			 return 0;
 		 }
 		 close(connfd);
 	}

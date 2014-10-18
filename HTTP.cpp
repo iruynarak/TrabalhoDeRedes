@@ -20,7 +20,7 @@ char* HTTP::doVersionNotSupported()
 char* HTTP::doNotFound()
 {
 	char* responseText = new char[BUFFSIZE];
-	strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\nNOT FOUND");
+	strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\nNot found hue");
 
 	return responseText;
 }

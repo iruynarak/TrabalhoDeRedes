@@ -29,7 +29,7 @@ class HTTP
 
 			char* responseText = new char[BUFFSIZE];
 
-			strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\n not found");
+			strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\n Not Found O_O");
 
 			return responseText;
 
