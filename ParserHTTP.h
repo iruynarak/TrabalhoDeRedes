@@ -7,6 +7,7 @@
 #endif
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 /**
@@ -53,30 +54,103 @@ class ParserHTTP
 
 			string word = "";
 
+			string key = "";
+
+			string value = "";
+
 			string method;
 
 			string requestURI;
 
-			while(true)
-			{
-				for ( ; header[i] != ' '; i++)
-					word += header[i];
+			bool notData = true;
 
-				if (word == "GET" || word == "POST")
-					method = word;
-				else
-					method = "Bad Request";
+			for ( ; header[i] != ' '; i++)
+				word += header[i];
+			i = ParserHTTP::skipTillLetter(i, header);
 
-				word = "";
-				for ( ; header[i] != ' '; i++)
-					word += header[i];
+			if (word == "GET" || word == "POST")
+				method = word;
 
-				requestURI = word;
+			word = "";
+			for ( ; header[i] != ' '; i++)
+				word += header[i];
+			i = ParserHTTP::skipTillLetter(i, header);
 
-				break;
-			}
+			requestURI = word;
 
 			requestHeader = new RequestHeader(method, requestURI);
+
+			word = "";
+			for ( ; header[i] != '\r'; i++)
+				word += header[i];
+
+			requestHeader->HTTPVersion = word;
+
+			while (notData)
+			{
+				i = ParserHTTP::skipTillLetter(i, header);
+
+				word = "";
+				for ( ; header[i] != ':'; i++)
+					word += header[i];
+				i = ParserHTTP::skipTillLetter(i, header);
+
+				key = word;
+
+				word = "";
+				for ( ; header[i] != '\r'; i++)
+					word += header[i];
+				notData = !ParserHTTP::verifyHeaderFieldsEnd(i, header);
+
+				value = word;
+
+				requestHeader->insert(key,value);
+			}
+
+			word = "";
+			for ( ; header[i] != '\0'; i++)
+				word += header[i];
+
+			requestHeader->messageBody = word;
+
 			return requestHeader;
+		}
+
+		static int skipTillLetter(int i, string header)
+		{
+			while (header[i] == ' ' || header[i] == '\r' || header[i] == '\n')
+				i++;
+			return i;
+		}
+
+		static bool verifyHeaderFieldsEnd(int i, string header)
+		{
+			bool result = false;
+
+			if (header[i] == '\r')
+			{
+				i++;
+				if (header[i] == '\n')
+				{
+					i++;
+					if (header[i] == '\r')
+					{
+						i++;
+						if (header[i] == '\n')
+						{
+							i++;
+							result = true;
+						}
+					}
+					else
+						result = false;
+				}
+				else
+					result = false;
+			}
+			else
+				result = false;
+
+			return result;
 		}
 };
