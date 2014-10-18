@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 			Error::printError(receiveData);
 			return 0;
 		}
-
+		buffer[n] = '\0';
 		printf("%s", buffer);
 
 		RequestHeader* requestHeader = ParserHTTP::execute(buffer);
