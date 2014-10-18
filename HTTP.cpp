@@ -29,6 +29,8 @@ char* HTTP::doGet()
 {
 	char* responseText = new char[BUFFSIZE];
 
+	//responseText = getData(requestHeader->requestURI);
+
 
 
 	return responseText;

@@ -58,7 +58,7 @@ class RequestHeader
 		void insert(string key, string value)
 		{
 			//todo: substituir map por uma lista
-			headerFields.insert(key, value);
+			headerFields.insert(make_pair(key,value));
 		}
 
 		/** Recebe dado opcional

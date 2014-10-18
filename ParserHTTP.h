@@ -51,14 +51,7 @@ class ParserHTTP
 
 			int i = 0;
 
-
-			string postRequest = "POST";
-
-			string badRequest = "Bad Request";
-
-			string HTTPVersion = "HTTP/1.1";
-
-			string word;
+			string word = "";
 
 			string method;
 
@@ -66,58 +59,24 @@ class ParserHTTP
 
 			while(true)
 			{
-				/*
-				 * Method
-				 */
-				while(header[i] != ' ')
-				{
+				for ( ; header[i] != ' '; i++)
 					word += header[i];
-					i++;
-				}
-				i++;
 
 				if (word == "GET" || word == "POST")
 					method = word;
 				else
-					method = badRequest;
+					method = "Bad Request";
 
 				word = "";
-
-				/*
-				 * Request URI
-				 */
-				while(header[i] != ' ')
-				{
+				for ( ; header[i] != ' '; i++)
 					word += header[i];
-					i++;
-				}
-				i++;
 
 				requestURI = word;
 
-				word = "";
-
-				requestHeader = new RequestHeader(method, requestURI);
-
-				/*
-				 * HTTP Version
-				 */
-				while(header[i] != '\r')
-				{
-					word += header[i];
-					i++;
-				}
-				i++;
-
-				if(header[i] == '\0')
-				{
-					break;
-				}
-
+				break;
 			}
 
-
-
+			requestHeader = new RequestHeader(method, requestURI);
 			return requestHeader;
 		}
 };
