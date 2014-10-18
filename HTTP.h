@@ -70,4 +70,6 @@ class HTTP
 
 		char* doPost();
 
+		char* HTTP::getData();
+
 };

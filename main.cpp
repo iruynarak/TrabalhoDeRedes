@@ -104,7 +104,5 @@ int main(int argc, char** argv)
 		 }
 		 close(connfd);
 	}
-
-
 	return 0;
 }

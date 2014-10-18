@@ -29,7 +29,7 @@ char* HTTP::doGet()
 {
 	char* responseText = new char[BUFFSIZE];
 
-	//responseText = getData(requestHeader->requestURI);
+	//responseText = getData();
 
 
 
@@ -40,9 +40,13 @@ char* HTTP::doPost()
 {
 	char* responseText = new char[BUFFSIZE];
 
-
-
 	return responseText;
 }
 
+char* HTTP::getData()
+{
+	char* responseText = new char[BUFFSIZE];
+
+	return responseText;
+}
 
