@@ -1,20 +1,8 @@
-#include <stdio.h>          /* printf */
-#include <stdlib.h>         /* exit */
+
 #include <string.h>         /* bzero */
-#include <sys/socket.h>     /* recv, send */
 #include <arpa/inet.h>      /* struct sockaddr */
+#include <sys/socket.h>     /* recv, send */
 #include <unistd.h>         /* exit */
-
-/*
-Adicionar arquivos:
-	git add .
-
-
-git commit -m hue
-
- git push -u origin master
-
-*/
 
 
 #define BUFFSIZE 500
@@ -25,16 +13,14 @@ git commit -m hue
 #endif
 
 
-#define SA struct sockaddr
 
 int main(void)
 {
 	//ErrorCode error;
 
-	int listenfd, connfd, n;
-	unsigned int clientlen;
+	struct sockaddr_in servaddr, client, connfd, n;
+	int listenfd, clientlen;
 	char buffer[BUFFSIZE];
-	struct sockaddr_in servaddr, client;
 
 
 	if((listenfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
@@ -43,12 +29,13 @@ int main(void)
 		return 0;
 	}
 
+
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family      	= AF_INET;
 	servaddr.sin_addr.s_addr 	= htonl(INADDR_ANY);
-	servaddr.sin_port        	= htons(8081);
+	servaddr.sin_port        	= 80;
 
-	if(bind(listenfd, (SA *) &servaddr, sizeof(servaddr)) < 0)
+	if(bind(listenfd, (sockaddr *) &servaddr, sizeof(servaddr)) < 0)
 	{
 		Error::printError(bindSocket);
 		return 0;
@@ -60,27 +47,23 @@ int main(void)
 		return 0;
 	}
 
-	while(true)
+	clientlen = sizeof(client);
+
+	if((connfd = accept(listenfd, (sockaddr *) &client, &clientlen)) < 0)
 	{
-		n = -1;
-		clientlen = sizeof(client);
-
-		if((connfd = accept(listenfd, (SA *) &client, &clientlen)) < 0)
-		{
-			Error::printError(acceptConnection);
-			return 0;
-		}
-
-		if((n = recv(connfd, buffer, BUFFSIZE, 0)) < 0)
-		{
-			Error::printError(receiveData);
-			return 0;
-		}
-
-		printf("%s", buffer);
-
-		close(connfd);
+		Error::printError(acceptConnection);
+		return 0;
 	}
+
+	if((n = recv(connfd, buffer, BUFFSIZE, 0)) < 0)
+	{
+		Error::printError(receiveData);
+		return 0;
+	}
+
+	printf("%s", buffer);
+
+
 	/*
 	Para envio:
 	if(send(connfd, buffer, BUFFSIZE, 0) != BUFFSIZE)
