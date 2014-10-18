@@ -8,12 +8,11 @@
 /*
 Adicionar arquivos:
 	git add .
+	git commit -m hue
+	git push -u origin master
 
-
-git commit -m hue
-
- git push -u origin master
-
+Pegar:
+	git pull origin master
 */
 
 
