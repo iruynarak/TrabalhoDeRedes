@@ -18,6 +18,11 @@ Pegar:
  http://127.0.0.1:8081
  * */
 
+/*
+Para compilar: g++ -Wall -std=c++11 -o main main.cpp
+Para executar: ./main [porta]
+*/
+
 #define BUFFSIZE 700
 #define MAXPENDING 5
 
