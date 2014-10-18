@@ -14,7 +14,9 @@ Adicionar arquivos:
 Pegar:
 	git pull origin master
 */
-
+/*
+ http://127.0.0.1:8081
+ * */
 
 #define BUFFSIZE 500
 #define MAXPENDING 5
@@ -26,7 +28,7 @@ Pegar:
 
 #define SA struct sockaddr
 
-int main(void)
+int main(int argc, char** argv)
 {
 	//ErrorCode error;
 
@@ -45,7 +47,7 @@ int main(void)
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family      	= AF_INET;
 	servaddr.sin_addr.s_addr 	= htonl(INADDR_ANY);
-	servaddr.sin_port        	= htons(8081);
+	servaddr.sin_port        	= htons(atoi(argv[1]));
 
 	if(bind(listenfd, (SA *) &servaddr, sizeof(servaddr)) < 0)
 	{
@@ -78,7 +80,16 @@ int main(void)
 
 		printf("%s", buffer);
 
-		close(connfd);
+
+
+		char* not_found_response_template = new char[500];
+		strcpy(not_found_response_template,
+				"HTTP/1.1 200 OK\r\nConnection: close \r\nContent-Type: text/html\r\n\r\nhuehue"
+		);
+
+		 int len = strlen(not_found_response_template);
+		 send(connfd, not_found_response_template, len, 0);
+		 close(connfd);
 	}
 	/*
 	Para envio:
