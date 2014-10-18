@@ -18,13 +18,24 @@ Pegar:
  http://127.0.0.1:8081
  * */
 
-#define BUFFSIZE 500
+#define BUFFSIZE 700
 #define MAXPENDING 5
 
 #ifndef _Error
 #include "Error.h"
 #endif
 
+#ifndef _RequestHeader
+#include "RequestHeader.h"
+#endif
+
+#ifndef _HTTP
+#include "HTTP.h"
+#endif
+
+#ifndef _ParserHTTP
+#include "ParserHTTP.h"
+#endif
 
 #define SA struct sockaddr
 
@@ -80,24 +91,19 @@ int main(int argc, char** argv)
 
 		printf("%s", buffer);
 
+		RequestHeader* requestHeader = ParserHTTP::execute(buffer);
+		HTTP* http = new HTTP(requestHeader);
+		char* responseText = http->execute(requestHeader);
 
 
-		char* not_found_response_template = new char[500];
-		strcpy(not_found_response_template,
-				"HTTP/1.1 200 OK\r\nConnection: close \r\nContent-Type: text/html\r\n\r\nhuehue"
-		);
-
-		 int len = strlen(not_found_response_template);
-		 send(connfd, not_found_response_template, len, 0);
+		 int len = strlen(responseText);
+		 send(connfd, responseText, len, 0);
+		 {
+			 Error::printError(sendData);
+		 }
 		 close(connfd);
 	}
-	/*
-	Para envio:
-	if(send(connfd, buffer, BUFFSIZE, 0) != BUFFSIZE)
-	{
-		Error::printError(sendData);
-	}
-	*/
+
 
 	return 0;
 }

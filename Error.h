@@ -11,7 +11,10 @@ typedef enum ErrorCode
 	listenSocket,
 	acceptConnection,
 	receiveData,
-	sendData
+	sendData,
+	badRequest,
+	notFound,
+	VersionNotSupported
 } ErrorCode;
 
 class Error
@@ -33,6 +36,13 @@ class Error
 					printf("Error: Falhou ao receber os dados restantes do cliente\n");
 				case sendData:
 					printf("Error:Falhou ao enviar os dados devolta para o cliente\n");
+				case badRequest:
+					printf("Error:Bad Request\n");
+				case notFound:
+					printf("Error:Not Found\n");
+				case VersionNotSupported:
+					printf("Error:Version Not Supported\n");
+
 
 			}
 
