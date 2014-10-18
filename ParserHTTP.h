@@ -118,7 +118,7 @@ class ParserHTTP
 
 		static int skipTillLetter(int i, string header)
 		{
-			while (header[i] == ' ' || header[i] == '\r' || header[i] == '\n')
+			while (header[i] == ' ' || header[i] == ':' || header[i] == '\r' || header[i] == '\n')
 				i++;
 			return i;
 		}
