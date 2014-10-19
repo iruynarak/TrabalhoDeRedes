@@ -25,7 +25,6 @@ char* HTTP::doNotFound()
 	return responseText;
 }
 
-//todo:
 char* HTTP::doGet()
 {
 	char* responseText = new char[BUFFSIZE];
