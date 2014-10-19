@@ -14,7 +14,8 @@ typedef enum ErrorCode
 	sendData,
 	badRequest,
 	notFound,
-	VersionNotSupported
+	versionNotSupported,
+	openFile
 } ErrorCode;
 
 class Error
@@ -40,8 +41,10 @@ class Error
 					printf("Error:Bad Request\n");
 				case notFound:
 					printf("Error:Not Found\n");
-				case VersionNotSupported:
+				case versionNotSupported:
 					printf("Error:Version Not Supported\n");
+				case openFile:
+					printf("Error: Não foi possível abrir o arquivo\n");
 
 
 			}

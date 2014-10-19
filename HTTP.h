@@ -11,11 +11,14 @@
 #endif
 
 #include <string>
+#include <string.h>
 #include <fstream>
 #include <sys/stat.h>
+#include <iostream>
 
 #define BUFFSIZE 700
 
+using namespace std;
 
 class HTTP
 {
@@ -27,40 +30,40 @@ class HTTP
 			this->requestHeader = requestHeader;
 		}
 
-		static char* execute(RequestHeader* requestHeader)
+		char* execute(RequestHeader* requestHeader)
 		{
 
-			char* responseText = new char[BUFFSIZE];
+			//char* responseText = new char[BUFFSIZE];
 
-			strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\n Not Found O_O");
+			//strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\n Not Found O_O");
 
-			return responseText;
+			//return responseText;
 
-//			if(requestHeader->HTTPVersion == "HTTP/1.1")
-//			{
-//
-//				if(requestHeader == "GET")
-//				{
-//					return doGet();
-//				}
-//				else if(requestHeader == "POST")
-//				{
-//					return doPost();
-//				}
-//				else
-//				{
-//					Error::printError(badRequest);
-//					return doBadRequest();
-//				}
-//			}
-//			else
-//			{
-//				Error::printError(VersionNotSupported);
-//				return doVersionNotSupported();
-//			}
-//
-//			Error::printError(badRequest);
-//			return doBadRequest();
+			if(requestHeader->HTTPVersion == "HTTP/1.1")
+			{
+
+				if(requestHeader->method == "GET")
+				{
+					return this->doGet();
+				}
+				else if(requestHeader->method == "POST")
+				{
+					return this->doPost();
+				}
+				else
+				{
+					Error::printError(badRequest);
+					return this->doBadRequest();
+				}
+			}
+			else
+			{
+				Error::printError(versionNotSupported);
+				return doVersionNotSupported();
+			}
+
+			Error::printError(badRequest);
+			return doBadRequest();
 		}
 
 		char* doBadRequest();
@@ -73,7 +76,7 @@ class HTTP
 
 		char* doPost();
 
-		char* getData();
+		string getData();
 
 		bool isDirectory(const char* path);
 

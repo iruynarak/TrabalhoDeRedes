@@ -27,10 +27,6 @@ char* HTTP::doNotFound()
 
 char* HTTP::doGet()
 {
-	char* responseText = new char[BUFFSIZE];
-
-	responseText = getData();
-
 	if(isFile(requestHeader->requestURI.c_str()))
 	{
 		return doGetFile();
@@ -40,13 +36,7 @@ char* HTTP::doGet()
 		return doGetDirectory();
 	}
 
-	else
-	{
-		return doBadRequest();
-	}
-
-
-	return responseText;
+	return doBadRequest();
 }
 
 //todo:
@@ -58,14 +48,27 @@ char* HTTP::doPost()
 }
 
 //todo:
-char* HTTP::getData()
+string HTTP::getData()
 {
-	char* responseText = new char[BUFFSIZE];
+	//cout << "Entrei aqui\n";
+	string line;
+	string total;
+	ifstream file(requestHeader->requestURI.c_str());
+	if(file.is_open())
+	{
+		while(getline(file,line))
+		{
+			total += line;
+			cout << line << '\n';
+		}
 
-
-	ifstream file(requestHeader->requestURI);
-
-	return responseText;
+		file.close();
+	}
+	else
+	{
+		Error::printError(openFile);
+	}
+	return total;
 }
 
 bool HTTP::isFile(const char* path) {
@@ -83,10 +86,23 @@ bool HTTP::isDirectory(const char* path) {
 //todo:
 char* HTTP::doGetFile()
 {
+	//cout << "Entrei na doGetFile()";
 	char* responseText = new char[BUFFSIZE];
 
+	//todo: criar response com o dado recebido de getData()
+	strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\nNot found");
 
-	ifstream file(requestHeader->requestURI);
+
+	string data = getData();
+	int length = data.length();
+
+	/*
+	HTTP/1.1 200 OK
+	Content-Type: text/xml; charset=utf-8
+	Content-Length: length
+
+	[DATA]
+	*/
 
 	return responseText;
 }
@@ -97,7 +113,7 @@ char* HTTP::doGetDirectory()
 	char* responseText = new char[BUFFSIZE];
 
 
-	ifstream file(requestHeader->requestURI);
+	ifstream file(requestHeader->requestURI.c_str());
 
 	return responseText;
 }
