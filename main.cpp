@@ -15,7 +15,9 @@ Pegar:
 	git pull origin master
 */
 /*
- http://127.0.0.1:8081
+ http://127.0.0.1:8081 -> GET /
+
+ http://127.0.0.1:8081/home/karan/Documents/teste.txt -> GET /home/karan/Documents/teste.txt
  * */
 
 /*
