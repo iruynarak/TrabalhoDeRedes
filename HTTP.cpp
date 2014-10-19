@@ -25,17 +25,32 @@ char* HTTP::doNotFound()
 	return responseText;
 }
 
+//todo:
 char* HTTP::doGet()
 {
 	char* responseText = new char[BUFFSIZE];
 
 	responseText = getData();
 
+	if(isFile(requestHeader->requestURI.c_str()))
+	{
+		return doGetFile();
+	}
+	else if(isDirectory(requestHeader->requestURI.c_str()))
+	{
+		return doGetDirectory();
+	}
+
+	else
+	{
+		return doBadRequest();
+	}
 
 
 	return responseText;
 }
 
+//todo:
 char* HTTP::doPost()
 {
 	char* responseText = new char[BUFFSIZE];
@@ -43,14 +58,47 @@ char* HTTP::doPost()
 	return responseText;
 }
 
+//todo:
 char* HTTP::getData()
 {
 	char* responseText = new char[BUFFSIZE];
 
 
-	FILE* file;
-	requestHeader->requestURI = ;
+	ifstream file(requestHeader->requestURI);
 
 	return responseText;
 }
 
+bool HTTP::isFile(const char* path) {
+    struct stat buf;
+    stat(path, &buf);
+    return S_ISREG(buf.st_mode);
+}
+
+bool HTTP::isDirectory(const char* path) {
+    struct stat buf;
+    stat(path, &buf);
+    return S_ISDIR(buf.st_mode);
+}
+
+//todo:
+char* HTTP::doGetFile()
+{
+	char* responseText = new char[BUFFSIZE];
+
+
+	ifstream file(requestHeader->requestURI);
+
+	return responseText;
+}
+
+//todo:
+char* HTTP::doGetDirectory()
+{
+	char* responseText = new char[BUFFSIZE];
+
+
+	ifstream file(requestHeader->requestURI);
+
+	return responseText;
+}

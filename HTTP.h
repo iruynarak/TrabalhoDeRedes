@@ -11,6 +11,9 @@
 #endif
 
 #include <string>
+#include <fstream>
+#include <sys/stat.h>
+
 #define BUFFSIZE 700
 
 
@@ -71,5 +74,13 @@ class HTTP
 		char* doPost();
 
 		char* getData();
+
+		bool isDirectory(const char* path);
+
+		bool isFile(const char* path);
+
+		char* doGetDirectory();
+
+		char* doGetFile();
 
 };

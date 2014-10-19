@@ -100,14 +100,14 @@ int main(int argc, char** argv)
 		HTTP* http = new HTTP(requestHeader);
 		char* responseText = http->execute(requestHeader);
 
-		Map::iterator it;
+		/*Map::iterator it;
 		cout << '\n';
 		for(it = requestHeader->headerFields.begin(); it != requestHeader->headerFields.end(); ++it)
 		{
 			cout << it->first << "=>" << it->second << '\n';
 		}
 		cout << '\n';
-
+		*/
 		int len = strlen(responseText);
 		if(send(connfd, responseText, len, 0) == -1)
 		{
