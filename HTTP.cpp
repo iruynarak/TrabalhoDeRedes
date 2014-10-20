@@ -3,6 +3,7 @@
 #endif
 
 
+
 char* HTTP::doBadRequest()
 {
 	char* responseText = new char[BUFFSIZE];
@@ -27,8 +28,10 @@ char* HTTP::doNotFound()
 
 char* HTTP::doGet()
 {
+	cout << "Entrei na doGet\n";
 	if(isFile(requestHeader->requestURI.c_str()))
 	{
+
 		return doGetFile();
 	}
 	else if(isDirectory(requestHeader->requestURI.c_str()))
@@ -42,6 +45,7 @@ char* HTTP::doGet()
 //todo:
 char* HTTP::doPost()
 {
+	cout << "Entrei na doPost\n";
 	char* responseText = new char[BUFFSIZE];
 
 	return responseText;
@@ -50,7 +54,7 @@ char* HTTP::doPost()
 //todo:
 string HTTP::getData()
 {
-	//cout << "Entrei aqui\n";
+	cout << "Entrei aqui na getData\n";
 	string line;
 	string total;
 	ifstream file(requestHeader->requestURI.c_str());
@@ -86,24 +90,33 @@ bool HTTP::isDirectory(const char* path) {
 //todo:
 char* HTTP::doGetFile()
 {
-	//cout << "Entrei na doGetFile()";
+	cout << "Entrei na doGetFile()\n";
 	char* responseText = new char[BUFFSIZE];
 
-	//todo: criar response com o dado recebido de getData()
-	strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\nNot found");
-
-
 	string data = getData();
-	int length = data.length();
 
-	/*
-	HTTP/1.1 200 OK
-	Content-Type: text/xml; charset=utf-8
-	Content-Length: length
+	cout<< "\n\nlength:" << data.length() << "\n\n";
+	char* length = new char[15];
+	sprintf(length,"%d", data.length());
+	string crlf = "\r\n";
+	string responseTextString =
+			"HTTP/1.1 200 OK"
+			+ crlf
+			+ "Content-Type: text/html; charset=utf-8"
+			+ crlf
+			+ "Content-Length: "
+			+ length
+			+ crlf
+			+ crlf
+			+ data;
+	int i;
+	for(i = 0; i < responseTextString.length(); i++)
+	{
+		responseText[i] = responseTextString[i];
+	}
+	cout << responseTextString << '\n';
 
-	[DATA]
-	*/
-
+	responseText[i] = '\0';
 	return responseText;
 }
 
@@ -111,8 +124,7 @@ char* HTTP::doGetFile()
 char* HTTP::doGetDirectory()
 {
 	char* responseText = new char[BUFFSIZE];
-
-
+	cout << "entrei na doGetDirectory\n";
 	ifstream file(requestHeader->requestURI.c_str());
 
 	return responseText;

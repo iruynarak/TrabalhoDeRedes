@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <iostream>
+#include <stdlib.h>
 
 #define BUFFSIZE 700
 
@@ -32,12 +33,6 @@ class HTTP
 
 		char* execute(RequestHeader* requestHeader)
 		{
-
-			//char* responseText = new char[BUFFSIZE];
-
-			//strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\n Not Found O_O");
-
-			//return responseText;
 
 			if(requestHeader->HTTPVersion == "HTTP/1.1")
 			{
