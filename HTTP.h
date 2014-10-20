@@ -14,6 +14,10 @@
 #include "GetExtension.h"
 #endif
 
+#ifndef _DirectoryManager
+#include "DirectoryManager.h"
+#endif
+
 #include <string>
 #include <string.h>
 #include <fstream>

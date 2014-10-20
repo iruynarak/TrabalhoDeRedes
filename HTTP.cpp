@@ -128,6 +128,12 @@ char* HTTP::doGetDirectory()
 {
 	char* responseText = new char[BUFFSIZE];
 	cout << "entrei na doGetDirectory\n";
+
+	DirectoryManager directoryManager;
+	directoryManager.openDirectory(requestHeader->requestURI);
+	directoryManager.printDirectory();
+	directoryManager.closeDirectory();
+
 	ifstream file(requestHeader->requestURI.c_str());
 
 	return responseText;

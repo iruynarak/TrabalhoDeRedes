@@ -20,7 +20,6 @@ class DirectoryManager
 			directoryInfo = 0;
 			directoryPointer = 0;
 		}
-		~DirectoryManager();
 
 		bool openDirectory(string directory)
 		{
