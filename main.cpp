@@ -25,7 +25,7 @@ Para compilar: g++ -Wall -std=c++11 -o main main.cpp
 Para executar: ./main [porta]
 */
 
-#define BUFFSIZE 700
+#define BUFFSIZE 500000
 #define MAXPENDING 5
 
 #ifndef _Error

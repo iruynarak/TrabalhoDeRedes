@@ -99,12 +99,17 @@ char* HTTP::doGetFile()
 	char* length = new char[15];
 	sprintf(length,"%d", data.length());
 	string crlf = "\r\n";
+	string type = GetExtension::getExtension(requestHeader->requestURI);
+	string contentType = GetExtension::getMIME(type);
 	string responseTextString =
 			"HTTP/1.1 200 OK"
 			+ crlf
-			+ "Content-Type: text/html; charset=utf-8"
+			+ "Content-Type: "
+			+ contentType;
 			+ crlf
 			+ "Content-Length: "
+			+ contentType
+			+ crlf
 			+ length
 			+ crlf
 			+ crlf

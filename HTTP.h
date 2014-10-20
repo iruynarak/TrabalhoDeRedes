@@ -17,7 +17,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define BUFFSIZE 700
+#define BUFFSIZE 500000
 
 using namespace std;
 
