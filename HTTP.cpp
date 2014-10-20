@@ -105,11 +105,9 @@ char* HTTP::doGetFile()
 			"HTTP/1.1 200 OK"
 			+ crlf
 			+ "Content-Type: "
-			+ contentType;
-			+ crlf
-			+ "Content-Length: "
 			+ contentType
 			+ crlf
+			+ "Content-Length: "
 			+ length
 			+ crlf
 			+ crlf

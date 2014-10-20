@@ -10,6 +10,10 @@
 #include "RequestHeader.h"
 #endif
 
+#ifndef _GetExtension
+#include "GetExtension.h"
+#endif
+
 #include <string>
 #include <string.h>
 #include <fstream>
