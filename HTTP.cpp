@@ -56,52 +56,23 @@ char* HTTP::getData(int* dataLength)
 	cout << "Entrei aqui na getData\n";
 	fileData = new char[99999999];
 	char c;
+	ifstream file(requestHeader->requestURI.c_str(), ios::binary | ios::in);
 
-//	if (GetExtension::getExtension(requestHeader->requestURI.c_str()) == "png" ||
-//			GetExtension::getExtension(requestHeader->requestURI.c_str()) == "jpg")
-//	{
-		ifstream file(requestHeader->requestURI.c_str(), ios::binary | ios::in);
+	file.seekg (0, file.end);
+	*dataLength = file.tellg();
+	file.seekg (0, file.beg);
 
-		file.seekg (0, file.end);
-		*dataLength = file.tellg();
-		file.seekg (0, file.beg);
-
-		if (file.is_open())
+	if (file.is_open())
+	{
+		for (int i = 0; i < *dataLength; i++)
 		{
-			for (int i = 0; i < *dataLength; i++)
-			{
-				file.get(c);
+			file.get(c);
 
-				fileData[i] = c;
-			}
-
-			file.close();
+			fileData[i] = c;
 		}
-//	}
-//	else// if (GetExtension::getExtension(requestHeader->requestURI.c_str()) == "html")
-//	{
-//		ifstream file(requestHeader->requestURI.c_str());
-//
-//		file.seekg (0, file.end);
-//		*dataLength = file.tellg();
-//		file.seekg (0, file.beg);
-//
-//		if (file.is_open())
-//		{
-//			for (int i = 0; i < *dataLength; i++)
-//			{
-//				file.get(c);
-//
-//				fileData[i] = c;
-//			}
-//
-//			file.close();
-//		}
-//	}
-//	else
-//	{
-//		Error::printError(openFile);
-//	}
+
+		file.close();
+	}
 
 	return fileData;
 }
@@ -185,14 +156,32 @@ char* HTTP::doGetFile()
 char* HTTP::doGetDirectory()
 {
 	char* responseText = new char[BUFFSIZE];
-	cout << "entrei na doGetDirectory\n";
+	//cout << "entrei na doGetDirectory\n";
 
 	DirectoryManager directoryManager;
 	directoryManager.openDirectory(requestHeader->requestURI);
-	directoryManager.printDirectory();
+	//directoryManager.printDirectory();
+	string html =  directoryManager.createHTML();
 	directoryManager.closeDirectory();
+	char length[15];
+	sprintf(length, "%d", static_cast<int>(html.length()));
+	string crlf = "\r\n";
 
-	ifstream file(requestHeader->requestURI.c_str());
+	string response;
+
+	response = "HTTP/1.1 200 OK";
+	response += crlf;
+	response += "Content-Type: text/html";
+	response += crlf;
+	response += "Content-Length: ";
+	response += length;
+	response += crlf;
+	response += crlf;
+	response += html;
+
+
+	sprintf(responseText,"%s", response.c_str());
+	cout << responseText<<'\n';
 
 	return responseText;
 }
