@@ -103,11 +103,15 @@ int main(int argc, char** argv)
 			n = recv(connfd, buffer, BUFFSIZE, 0);
 
 			cout << "\nN " << n << endl;
+			cout << "\nSTRLEN " << strlen(buffer) << endl;
 
 			if(n != -1)
 			{
+				for (int i = 0; i < n; i++)
+				{
+					receivedDataBuffer[i + receivedDataLength] = buffer[i];
+				}
 				receivedDataLength += n;
-				strcat(receivedDataBuffer, buffer);
 			}
 			else
 			{
