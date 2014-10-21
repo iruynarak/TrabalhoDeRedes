@@ -14,7 +14,6 @@ class GetExtension
 
 			size_t pos = path.find(".");
 			string extension = path.substr(pos+1);
-			cout << extension << '\n';
 			return extension;
 		}
 

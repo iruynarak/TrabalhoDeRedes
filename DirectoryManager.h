@@ -34,7 +34,7 @@ class DirectoryManager
 
 		void printDirectory()
 		{
-			while(directoryInfo = readdir(directoryPointer))
+			while((directoryInfo = readdir(directoryPointer)))
 			{
 				cout << directoryInfo->d_name << '\n';
 			}

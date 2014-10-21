@@ -25,7 +25,6 @@ Para compilar: g++ -Wall -std=c++11 -o main main.cpp
 Para executar: ./main [porta]
 */
 
-#define BUFFSIZE 500000
 #define MAXPENDING 5
 
 #ifndef _Error
@@ -55,10 +54,13 @@ int main(int argc, char** argv)
 	char buffer[BUFFSIZE];
 	struct sockaddr_in servaddr, client;
 
+	int receivedDataLength;
+	char* receivedDataBuffer = new char[1024000];
 
 	if((listenfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 	{
 		Error::printError(createSocket);
+		delete [] receivedDataBuffer;
 		return 0;
 	}
 
@@ -70,35 +72,55 @@ int main(int argc, char** argv)
 	if(bind(listenfd, (SA *) &servaddr, sizeof(servaddr)) < 0)
 	{
 		Error::printError(bindSocket);
+		delete [] receivedDataBuffer;
 		return 0;
 	}
 
 	if(listen(listenfd, MAXPENDING) < 0)
 	{
 		Error::printError(listenSocket);
+		delete [] receivedDataBuffer;
 		return 0;
 	}
 
 	while(true)
 	{
-		n = -1;
+		n = 0;
 		clientlen = sizeof(client);
 
 		if((connfd = accept(listenfd, (SA *) &client, &clientlen)) < 0)
 		{
 			Error::printError(acceptConnection);
+			delete [] receivedDataBuffer;
 			return 0;
 		}
 
-		if((n = recv(connfd, buffer, BUFFSIZE, 0)) < 0)
+		receivedDataLength = 0;
+		strcpy(receivedDataBuffer,"");
+
+		do
 		{
-			Error::printError(receiveData);
-			return 0;
-		}
-		buffer[n] = '\0';
-		printf("%s", buffer);
+			n = recv(connfd, buffer, BUFFSIZE, 0);
 
-		RequestHeader* requestHeader = ParserHTTP::execute(buffer);
+			cout << "\nN " << n << endl;
+
+			if(n != -1)
+			{
+				receivedDataLength += n;
+				strcat(receivedDataBuffer, buffer);
+			}
+			else
+			{
+				Error::printError(receiveData);
+				delete [] receivedDataBuffer;
+				return 0;
+			}
+		}
+		while (n == 1500);
+
+		printf("%s", receivedDataBuffer);
+
+		RequestHeader* requestHeader = ParserHTTP::execute(receivedDataBuffer);
 		HTTP* http = new HTTP(requestHeader);
 		char* responseText = http->execute(requestHeader);
 
@@ -110,13 +132,46 @@ int main(int argc, char** argv)
 		}
 		cout << '\n';
 		*/
-		int len = strlen(responseText);
-		if(send(connfd, responseText, len, 0) == -1)
+
+		n = 0;
+		int i;
+		int totalSent = 0;
+		char* auxStr = new char[1024000];
+		do
 		{
-			Error::printError(sendData);
-			return 0;
+			strcpy(auxStr, "");
+			for (i = totalSent; i < http->responseLength; i++)
+				auxStr[i - totalSent] = responseText[i];
+
+			if ((http->responseLength - totalSent) > BUFFSIZE)
+			{
+				n = send(connfd, auxStr, BUFFSIZE, 0);
+			}
+			else
+			{
+				n = send(connfd, auxStr, (http->responseLength - totalSent), 0);
+			}
+
+			if(n != 1)
+				totalSent += n;
+			else
+			{
+				Error::printError(sendData);
+				delete [] receivedDataBuffer;
+				return 0;
+			}
 		}
+		while (totalSent < http->responseLength);
+
+//		delete [] http->responseText;
+//		delete [] http->fileData;
+
+		cout << "\nTerminou\n";
+
 		close(connfd);
 	}
+
+	delete [] receivedDataBuffer;
+
 	return 0;
 }

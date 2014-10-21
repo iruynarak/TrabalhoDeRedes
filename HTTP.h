@@ -25,7 +25,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define BUFFSIZE 500000
+#define BUFFSIZE 1500
 
 using namespace std;
 
@@ -33,6 +33,12 @@ class HTTP
 {
 	public:
 		RequestHeader* requestHeader;
+
+		int responseLength;
+
+		char* responseText;
+
+		char* fileData;
 
 		HTTP(RequestHeader* requestHeader)
 		{
@@ -79,7 +85,7 @@ class HTTP
 
 		char* doPost();
 
-		string getData();
+		char* getData(int* dataLength);
 
 		bool isDirectory(const char* path);
 

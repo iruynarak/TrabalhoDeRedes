@@ -6,21 +6,21 @@
 
 char* HTTP::doBadRequest()
 {
-	char* responseText = new char[BUFFSIZE];
+	responseText = new char[BUFFSIZE];
 	strcpy(responseText, "HTTP/1.1 400 Bad Request\r\nContent-type: text/html\r\n\r\nBad Requestd");
 	return responseText;
 }
 
 char* HTTP::doVersionNotSupported()
 {
-	char* responseText = new char[BUFFSIZE];
+	responseText = new char[BUFFSIZE];
 	strcpy(responseText, "HTTP/1.1 505 HTTP Version Not Supported\r\nContent-type: text/html\r\n\r\nVersion Not Supported");
 	return responseText;
 }
 
 char* HTTP::doNotFound()
 {
-	char* responseText = new char[BUFFSIZE];
+	responseText = new char[BUFFSIZE];
 	strcpy(responseText, "HTTP/1.1 404 Not Found\r\nContent-type: text/html\r\n\r\nNot found");
 
 	return responseText;
@@ -31,7 +31,6 @@ char* HTTP::doGet()
 	cout << "Entrei na doGet\n";
 	if(isFile(requestHeader->requestURI.c_str()))
 	{
-
 		return doGetFile();
 	}
 	else if(isDirectory(requestHeader->requestURI.c_str()))
@@ -52,27 +51,59 @@ char* HTTP::doPost()
 }
 
 //todo:
-string HTTP::getData()
+char* HTTP::getData(int* dataLength)
 {
 	cout << "Entrei aqui na getData\n";
-	string line;
-	string total;
-	ifstream file(requestHeader->requestURI.c_str());
-	if(file.is_open())
-	{
-		while(getline(file,line))
-		{
-			total += line;
-			cout << line << '\n';
-		}
+	fileData = new char[99999999];
+	char c;
 
-		file.close();
-	}
-	else
-	{
-		Error::printError(openFile);
-	}
-	return total;
+//	if (GetExtension::getExtension(requestHeader->requestURI.c_str()) == "png" ||
+//			GetExtension::getExtension(requestHeader->requestURI.c_str()) == "jpg")
+//	{
+		ifstream file(requestHeader->requestURI.c_str(), ios::binary | ios::in);
+
+		file.seekg (0, file.end);
+		*dataLength = file.tellg();
+		file.seekg (0, file.beg);
+
+		if (file.is_open())
+		{
+			for (int i = 0; i < *dataLength; i++)
+			{
+				file.get(c);
+
+				fileData[i] = c;
+			}
+
+			file.close();
+		}
+//	}
+//	else// if (GetExtension::getExtension(requestHeader->requestURI.c_str()) == "html")
+//	{
+//		ifstream file(requestHeader->requestURI.c_str());
+//
+//		file.seekg (0, file.end);
+//		*dataLength = file.tellg();
+//		file.seekg (0, file.beg);
+//
+//		if (file.is_open())
+//		{
+//			for (int i = 0; i < *dataLength; i++)
+//			{
+//				file.get(c);
+//
+//				fileData[i] = c;
+//			}
+//
+//			file.close();
+//		}
+//	}
+//	else
+//	{
+//		Error::printError(openFile);
+//	}
+
+	return fileData;
 }
 
 bool HTTP::isFile(const char* path) {
@@ -90,36 +121,63 @@ bool HTTP::isDirectory(const char* path) {
 //todo:
 char* HTTP::doGetFile()
 {
-	cout << "Entrei na doGetFile()\n";
-	char* responseText = new char[BUFFSIZE];
+	cout << "Entrei na doGetFile\n";
+	responseText = new char[99999999];
+	cout << "Chegou\n";
+	int dataLength;
 
-	string data = getData();
+	char* data = getData(&dataLength);
 
-	cout<< "\n\nlength:" << data.length() << "\n\n";
-	char* length = new char[15];
-	sprintf(length,"%d", data.length());
-	string crlf = "\r\n";
-	string type = GetExtension::getExtension(requestHeader->requestURI);
-	string contentType = GetExtension::getMIME(type);
-	string responseTextString =
-			"HTTP/1.1 200 OK"
-			+ crlf
-			+ "Content-Type: "
-			+ contentType
-			+ crlf
-			+ "Content-Length: "
-			+ length
-			+ crlf
-			+ crlf
-			+ data;
-	int i;
-	for(i = 0; i < responseTextString.length(); i++)
+	char* crlf = new char[sizeof("\r\n")];
+
+	strcpy(crlf, "\r\n");
+
+	char* type = new char[GetExtension::getExtension(requestHeader->requestURI).size()];
+
+	strcpy(type, GetExtension::getExtension(requestHeader->requestURI).c_str());
+
+	char* contentType = new char[GetExtension::getMIME(type).size()];
+
+	strcpy(contentType, GetExtension::getMIME(type).c_str());
+
+	strcpy(responseText, "HTTP/1.1 200 OK");
+
+	strcat(responseText, crlf);
+
+	strcat(responseText, "Content-Type: ");
+
+	strcat(responseText, contentType);
+
+	strcat(responseText, crlf);
+
+	strcat(responseText, "Content-Length: ");
+
+	char* charDataLength = new char[sizeof("%d")];
+
+	sprintf(charDataLength, "%d", dataLength);
+
+	strcat(responseText, charDataLength);
+
+	strcat(responseText, crlf);
+
+	strcat(responseText, crlf);
+
+	cout << "Chegou2\n";
+
+	int strLength = strlen(responseText);
+
+	for (int i = 0; i < dataLength; i++)
 	{
-		responseText[i] = responseTextString[i];
+		responseText[i + strLength] = data[i];
 	}
-	cout << responseTextString << '\n';
+	cout << "Chegou3\n";
+	responseLength = strLength + dataLength;
 
-	responseText[i] = '\0';
+	delete [] crlf;
+	delete [] type;
+	delete [] contentType;
+	delete [] charDataLength;
+
 	return responseText;
 }
 
